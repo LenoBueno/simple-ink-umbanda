@@ -1,8 +1,8 @@
 
 const Footer = () => {
   return (
-    <footer className="fixed bottom-12 left-1/2 -translate-x-1/2">
-      <p className="text-sm tracking-wider">
+    <footer className="py-8 mt-auto">
+      <p className="text-sm tracking-wider text-center">
         © 2025 Umbanda - <span className="uppercase">Desde 1908</span>
       </p>
     </footer>

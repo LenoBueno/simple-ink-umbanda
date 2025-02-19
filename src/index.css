@@ -22,6 +22,6 @@
 @layer components {
   .nav-link {
     @apply text-base uppercase font-medium relative transition-all duration-200
-           hover:text-neutral-600 hover:shadow-lg py-2;
+           hover:text-neutral-600 hover:shadow-black hover:shadow-lg py-2;
   }
 }

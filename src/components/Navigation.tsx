@@ -28,7 +28,7 @@ const Navigation = () => {
           </button>
           
           {isMenuOpen && (
-            <ul className="absolute top-full right-0 mt-2 bg-white shadow-lg shadow-black/20 py-4 px-6 min-w-[200px] animate-fadeIn">
+            <ul className="absolute top-full right-0 mt-2 bg-white shadow-black shadow-lg py-4 px-6 min-w-[200px] animate-fadeIn">
               <li className="mb-4">
                 <Link 
                   to="/" 
@@ -61,9 +61,9 @@ const Navigation = () => {
         </div>
       ) : (
         <ul className="flex space-x-12 items-center">
-          <Link to="/" className="nav-link">Home</Link>
-          <Link to="/pontos" className="nav-link">Pontos</Link>
-          <Link to="/historia" className="nav-link">História</Link>
+          <Link to="/" className="nav-link shadow-black">Home</Link>
+          <Link to="/pontos" className="nav-link shadow-black">Pontos</Link>
+          <Link to="/historia" className="nav-link shadow-black">História</Link>
         </ul>
       )}
     </nav>

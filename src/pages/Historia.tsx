@@ -4,10 +4,10 @@ import Footer from "../components/Footer";
 
 const Historia = () => {
   return (
-    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden animate-fadeIn">
+    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden animate-fadeIn flex flex-col">
       <Header />
       <Navigation />
-      <main className="w-full min-h-screen flex items-center justify-center px-24 py-48">
+      <main className="flex-1 w-full flex items-center justify-center px-24 py-48">
         <div className="max-w-3xl space-y-8">
           <h2 className="text-3xl font-bold mb-8">A História da Umbanda: Uma Religião Brasileira de Muitas Raízes</h2>
           
