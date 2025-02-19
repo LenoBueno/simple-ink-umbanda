@@ -1,6 +1,7 @@
 
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
+import Footer from "../components/Footer";
 
 const Pontos = () => {
   return (
@@ -13,6 +14,7 @@ const Pontos = () => {
           <p className="text-lg">Pontos de Umbanda serão listados aqui.</p>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };
