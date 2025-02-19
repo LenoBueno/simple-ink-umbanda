@@ -1,4 +1,3 @@
-
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
@@ -8,7 +7,7 @@ const Historia = () => {
     <div className="min-h-screen w-full bg-white text-black relative overflow-hidden animate-fadeIn">
       <Header />
       <Navigation />
-      <main className="w-full min-h-screen flex items-center justify-center px-24 py-32">
+      <main className="w-full min-h-screen flex items-center justify-center px-24 py-48">
         <div className="max-w-3xl space-y-8">
           <h2 className="text-3xl font-bold mb-8">A História da Umbanda: Uma Religião Brasileira de Muitas Raízes</h2>
           

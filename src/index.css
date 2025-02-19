@@ -24,13 +24,4 @@
     @apply text-base uppercase font-medium relative transition-all duration-200
            hover:text-neutral-600 hover:shadow-lg py-2;
   }
-
-  .nav-link::after {
-    content: '';
-    @apply absolute left-0 bottom-0 w-0 h-[1px] bg-black transition-all duration-300;
-  }
-
-  .nav-link:hover::after {
-    @apply w-full;
-  }
 }
