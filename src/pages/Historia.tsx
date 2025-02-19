@@ -2,21 +2,19 @@
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
 
-const Index = () => {
+const Historia = () => {
   return (
     <div className="min-h-screen w-full bg-white text-black relative overflow-hidden animate-fadeIn">
       <Header />
       <Navigation />
       <main className="w-full h-screen flex items-center justify-center px-24">
-        <div className="w-[600px] h-[400px] border border-black/10">
-          {/* Placeholder for future image */}
-          <div className="w-full h-full flex items-center justify-center text-black/30">
-            Imagem Central
-          </div>
+        <div className="max-w-2xl">
+          <h2 className="text-3xl font-bold mb-8">História</h2>
+          <p className="text-lg">Conteúdo sobre a história da Umbanda será adicionado aqui.</p>
         </div>
       </main>
     </div>
   );
 };
 
-export default Index;
+export default Historia;
