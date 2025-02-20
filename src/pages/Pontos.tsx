@@ -41,12 +41,14 @@ const Pontos = () => {
   });
 
   return (
-    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden animate-fadeIn">
+    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden">
       <Header />
       <Navigation />
       <main className="w-full min-h-screen px-6 md:px-24 py-32">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold mb-12">Pontos de Umbanda</h2>
+          <div className="flex justify-end mb-24 pt-12">
+            <h2 className="text-3xl font-medium uppercase tracking-wide">Pontos de Umbanda</h2>
+          </div>
           
           {/* Playlists Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">

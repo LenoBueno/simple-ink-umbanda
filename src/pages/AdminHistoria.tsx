@@ -36,12 +36,20 @@ const AdminHistoria = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden animate-fadeIn">
+    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden">
       <Header />
       <Navigation />
       <main className="w-full min-h-screen px-6 md:px-24 py-32">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8">Editar História</h2>
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="text-3xl font-bold">Editar História</h2>
+            <button
+              onClick={() => navigate('/admin')}
+              className="px-6 py-2 border rounded hover:bg-gray-50"
+            >
+              Voltar para o Painel
+            </button>
+          </div>
           
           <div className="space-y-6">
             <textarea

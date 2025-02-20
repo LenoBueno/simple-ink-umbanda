@@ -131,7 +131,7 @@ const AdminPontos = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden animate-fadeIn">
+    <div className="min-h-screen w-full bg-white text-black relative overflow-hidden">
       <Header />
       <Navigation />
       <main className="w-full min-h-screen px-6 md:px-24 py-32">
@@ -142,7 +142,7 @@ const AdminPontos = () => {
               onClick={() => navigate('/admin')}
               className="px-6 py-2 border rounded hover:bg-gray-50"
             >
-              Voltar
+              Voltar para o Painel
             </button>
           </div>
 
