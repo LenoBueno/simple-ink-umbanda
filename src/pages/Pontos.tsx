@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../components/Header";
@@ -5,6 +6,7 @@ import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
 import { supabase } from "../lib/supabase";
 import type { Playlist, Ponto } from "../types";
+import { mockPlaylists, mockPontos } from "../data/mockData";
 
 const Pontos = () => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
@@ -12,13 +14,8 @@ const Pontos = () => {
   const { data: playlists } = useQuery({
     queryKey: ['playlists'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('playlists')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as Playlist[];
+      // Temporariamente usando dados mockados
+      return mockPlaylists;
     }
   });
 
@@ -27,14 +24,8 @@ const Pontos = () => {
     queryFn: async () => {
       if (!selectedPlaylist) return [];
       
-      const { data, error } = await supabase
-        .from('pontos')
-        .select('*')
-        .eq('playlist_id', selectedPlaylist)
-        .order('created_at', { ascending: true });
-      
-      if (error) throw error;
-      return data as Ponto[];
+      // Temporariamente usando dados mockados
+      return mockPontos.filter(ponto => ponto.playlist_id === selectedPlaylist);
     },
     enabled: !!selectedPlaylist
   });
