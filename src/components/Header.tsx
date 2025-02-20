@@ -14,7 +14,7 @@ const Header = () => {
   }, []);
 
   return (
-    <header className={`fixed top-12 left-12 z-50 ${isScrolled ? 'bg-black/90 p-4 rounded transition-all duration-300' : ''}`}>
+    <header className={`fixed top-12 left-12 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/90 p-4 rounded opacity-0' : ''}`}>
       <div className="relative">
         <h1 className="text-5xl font-semibold tracking-wider">UMBANDA</h1>
         <span className="absolute -bottom-6 right-0 text-sm font-light tracking-widest uppercase">
