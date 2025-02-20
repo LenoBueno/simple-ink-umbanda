@@ -22,7 +22,7 @@ const Header = () => {
       }`}
     >
       <div className="relative">
-        <h1 className={`font-semibold tracking-wider shadow-black shadow-lg transition-all duration-300 ${
+        <h1 className={`font-semibold tracking-wider transition-all duration-300 ${
           isScrolled ? 'text-3xl' : 'text-5xl'
         }`}>UMBANDA</h1>
         <span className={`absolute -bottom-6 right-0 text-sm font-light tracking-widest uppercase transition-all duration-300 ${
