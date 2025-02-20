@@ -15,10 +15,12 @@ const Header = () => {
   return (
     <header className="fixed top-12 left-12 z-50 transition-all duration-300">
       <div className="relative">
-        <h1 className={`tracking-wider font-semibold transition-all duration-300 ${isScrolled ? 'text-[20px]' : 'text-5xl'}`}>
+        <h1 className={`tracking-wider font-semibold transition-all duration-300 ${isScrolled ? 'text-[23px]' : 'text-5xl'}`}>
           UMBANDA
         </h1>
-        <span className={`absolute -bottom-5 right-0 font-light tracking-widest uppercase transition-all duration-300 ${isScrolled ? 'text-[10px]' : 'text-sm'}`}>
+        <span
+          className={`absolute right-0 font-light tracking-widest uppercase transition-all duration-300 ${isScrolled ? 'text-[10px] bottom-[-9px]' : 'text-sm bottom-[-1.5rem]'}`}
+        >
           desde 1908
         </span>
       </div>
