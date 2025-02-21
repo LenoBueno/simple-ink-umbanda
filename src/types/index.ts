@@ -2,6 +2,7 @@
 export interface Playlist {
   id: string;
   titulo: string;
+  subtitulo?: string;
   imagem_url: string;
   compositor: string;
   created_at: string;
@@ -24,4 +25,3 @@ export interface Historia {
   conteudo: string;
   created_at: string;
 }
-

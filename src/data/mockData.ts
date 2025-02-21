@@ -1,8 +1,10 @@
+
 export const mockPlaylists = [
   {
     id: "1",
     titulo: "Pontos de Preto Velho",
-    compositor: "Tradicional",
+    subtitulo: "Tradicional",
+    compositor: "José da Silva",
     imagem_url: "https://images.unsplash.com/photo-1534531173927-aeb928d54385?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
     created_at: new Date().toISOString(),
     num_followers: 120,
@@ -11,7 +13,8 @@ export const mockPlaylists = [
   {
     id: "2",
     titulo: "Pontos de Caboclo",
-    compositor: "Tradicional",
+    subtitulo: "Tradicional",
+    compositor: "Maria Santos",
     imagem_url: "https://images.unsplash.com/photo-1599421498111-833c79b23af4?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
     created_at: new Date().toISOString(),
     num_followers: 89,
@@ -20,7 +23,8 @@ export const mockPlaylists = [
   {
     id: "3",
     titulo: "Pontos de Oxóssi",
-    compositor: "Tradicional",
+    subtitulo: "Tradicional",
+    compositor: "João Oliveira",
     imagem_url: "https://images.unsplash.com/photo-1597855239105-23b13e4e5b43?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
     created_at: new Date().toISOString(),
     num_followers: 245,
