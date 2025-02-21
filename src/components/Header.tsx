@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 
 const Header = () => {
@@ -15,12 +16,10 @@ const Header = () => {
   return (
     <header className="fixed top-12 left-12 z-50 transition-all duration-300">
       <div className="relative">
-        <h1 className={`tracking-wider font-semibold transition-all duration-300 ${isScrolled ? 'text-[23px]' : 'text-5xl'}`}>
+        <h1 className="text-5xl tracking-wider font-semibold">
           UMBANDA
         </h1>
-        <span
-          className={`absolute right-0 font-light tracking-widest uppercase transition-all duration-300 ${isScrolled ? 'text-[10px] bottom-[-9px]' : 'text-sm bottom-[-1.5rem]'}`}
-        >
+        <span className="absolute right-0 bottom-[-1.5rem] font-light tracking-widest uppercase text-sm">
           desde 1908
         </span>
       </div>

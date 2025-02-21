@@ -7,10 +7,12 @@ import Footer from "../components/Footer";
 import { supabase } from "../lib/supabase";
 import type { Playlist, Ponto } from "../types";
 import { mockPlaylists, mockPontos } from "../data/mockData";
+import { X, Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
 const Pontos = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,16 +44,15 @@ const Pontos = () => {
     <div className="min-h-screen w-full bg-white text-black relative overflow-hidden">
       <Header />
       <Navigation />
-      <div className={`fixed top-0 left-0 right-0 h-24 z-40 transition-colors duration-300 ${isScrolled ? 'bg-black bg-opacity-50' : ''}`} />
-      <div className="fixed top-24 right-24 z-50">
+      <div className="fixed top-36 right-24 z-50 md:top-36 sm:right-12 xs:right-6">
         <h2 className="text-3xl font-medium uppercase tracking-wide">Pontos de Umbanda</h2>
       </div>
-      <main className="w-full min-h-screen p-6 md:p-24 pt-40 mt-12">
+      <main className="w-full min-h-screen p-6 md:p-24 pt-48 mt-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {playlists?.map((playlist) => (
             <div
               key={playlist.id}
-              className="relative w-[300px] h-[160px] bg-white rounded-lg shadow-lg transition-all duration-500 hover:h-[400px] group mx-auto"
+              className="relative w-[300px] h-[160px] bg-white rounded-lg shadow-lg transition-all duration-500 hover:h-[320px] group mx-auto"
             >
               {/* Imagem */}
               <div className="absolute left-1/2 -top-[40px] -translate-x-1/2 w-[120px] h-[120px] bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-500 group-hover:w-[160px] group-hover:h-[160px]">
@@ -64,11 +65,11 @@ const Pontos = () => {
 
               {/* Conteúdo */}
               <div className="absolute inset-0 flex justify-center items-end overflow-hidden">
-                <div className="p-6 text-center w-full transition-transform duration-500 translate-y-[150px] group-hover:translate-y-0">
+                <div className="p-6 text-center w-full transition-transform duration-500 translate-y-[100px] group-hover:translate-y-0">
                   <h2 className="text-xl font-semibold text-black">{playlist.titulo}</h2>
                   <span className="text-sm text-gray-500">{playlist.subtitulo}</span>
 
-                  <div className="flex justify-between my-5">
+                  <div className="flex justify-between my-4">
                     <div className="text-center">
                       <h3 className="font-semibold">{mockPontos.filter(p => p.playlist_id === playlist.id).length}</h3>
                       <span className="text-sm text-gray-500">Pontos</span>
@@ -106,22 +107,52 @@ const Pontos = () => {
         {/* Player inline */}
         {selectedPlaylist && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-xl w-[300px]">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h3 className="text-xl font-bold">{selectedPlaylist.titulo}</h3>
-                  <p className="text-sm text-gray-500">Compositor: {selectedPlaylist.compositor}</p>
+            <div className="bg-white p-6 rounded-lg shadow-xl w-[400px] max-w-[95vw]">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  <img 
+                    src={selectedPlaylist.imagem_url} 
+                    alt={selectedPlaylist.titulo}
+                    className="w-16 h-16 rounded-md object-cover"
+                  />
+                  <div>
+                    <h3 className="text-lg font-bold">{selectedPlaylist.titulo}</h3>
+                    <p className="text-sm text-gray-500">{selectedPlaylist.subtitulo}</p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setSelectedPlaylist(null)}
                   className="text-gray-500 hover:text-black"
                 >
-                  ✕
+                  <X size={24} />
                 </button>
               </div>
-              {/* Aqui você pode adicionar o componente de player de áudio */}
-              <div className="mt-4">
-                <p className="text-sm text-gray-600">Player em desenvolvimento...</p>
+
+              {/* Progress bar */}
+              <div className="mb-4">
+                <div className="h-1 w-full bg-gray-200 rounded-full">
+                  <div className="h-1 w-1/3 bg-black rounded-full"></div>
+                </div>
+                <div className="flex justify-between text-sm text-gray-500 mt-1">
+                  <span>1:20</span>
+                  <span>3:45</span>
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center justify-center space-x-6">
+                <button className="text-gray-700 hover:text-black">
+                  <SkipBack size={24} />
+                </button>
+                <button 
+                  className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                >
+                  {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+                </button>
+                <button className="text-gray-700 hover:text-black">
+                  <SkipForward size={24} />
+                </button>
               </div>
             </div>
           </div>
