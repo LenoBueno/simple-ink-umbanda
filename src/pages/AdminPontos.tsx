@@ -35,6 +35,7 @@ const AdminPontos = () => {
     const form = event.currentTarget;
     const formData = new FormData(form);
     const titulo = formData.get('titulo') as string;
+    const compositor = formData.get('compositor') as string;
     const imagem = formData.get('imagem') as File;
 
     try {
@@ -54,7 +55,7 @@ const AdminPontos = () => {
       // Create playlist
       const { error: insertError } = await supabase
         .from('playlists')
-        .insert({ titulo, imagem_url });
+        .insert({ titulo, compositor, imagem_url });
 
       if (insertError) throw insertError;
 
@@ -157,6 +158,18 @@ const AdminPontos = () => {
                 <input
                   id="titulo"
                   name="titulo"
+                  type="text"
+                  required
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label htmlFor="compositor" className="block text-sm font-medium mb-2">
+                  Compositor
+                </label>
+                <input
+                  id="compositor"
+                  name="compositor"
                   type="text"
                   required
                   className="w-full p-2 border rounded"
@@ -268,3 +281,4 @@ const AdminPontos = () => {
 };
 
 export default AdminPontos;
+

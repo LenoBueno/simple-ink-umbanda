@@ -3,7 +3,11 @@ export interface Playlist {
   id: string;
   titulo: string;
   imagem_url: string;
+  compositor: string;
   created_at: string;
+  num_pontos?: number;
+  num_followers?: number;
+  num_downloads?: number;
 }
 
 export interface Ponto {
@@ -20,3 +24,4 @@ export interface Historia {
   conteudo: string;
   created_at: string;
 }
+
