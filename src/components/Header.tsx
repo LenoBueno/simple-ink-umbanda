@@ -21,14 +21,14 @@ const Header = () => {
         <h1 
           className={`text-5xl tracking-wider font-semibold transition-all duration-700 transform ${
             isVisible ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
-          }`}
+          } ${isScrolled ? 'text-xl' : 'text-5xl'}`}
         >
           UMBANDA
         </h1>
         <span 
           className={`absolute right-0 bottom-[-1.5rem] font-light tracking-widest uppercase text-sm transition-all duration-700 delay-300 transform ${
             isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-          }`}
+          } ${isScrolled ? 'text-xs' : 'text-sm'}`}
         >
           desde 1908
         </span>

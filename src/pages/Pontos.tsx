@@ -48,20 +48,20 @@ const Pontos = () => {
         <h2 
           className={`text-3xl font-medium uppercase tracking-wide transition-all duration-700 transform ${
             isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-          }`}
+          } ${isScrolled ? 'text-xl' : 'text-3xl'}`}
         >
           Pontos de Umbanda
         </h2>
       </div>
-      <main className="w-full min-h-screen p-6 md:p-24 pt-48 mt-12">
-        <div className="grid grid-cols-5 gap-6 max-w-[1800px] mx-auto">
+      <main className="w-full min-h-screen p-6 md:p-24 pt-72 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8 max-w-[1800px] mx-auto">
           {playlists?.map((playlist) => (
             <div
               key={playlist.id}
-              className="relative w-full h-[140px] bg-white rounded-lg shadow-lg transition-all duration-500 hover:h-[280px] group"
+              className="relative w-full min-h-[200px] bg-white rounded-lg shadow-lg transition-all duration-500 hover:shadow-xl group"
             >
               {/* Imagem */}
-              <div className="absolute left-1/2 -top-[30px] -translate-x-1/2 w-[100px] h-[100px] bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-500 group-hover:w-[140px] group-hover:h-[140px]">
+              <div className="absolute left-1/2 -top-[40px] -translate-x-1/2 w-[120px] h-[120px] bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-500 group-hover:w-[140px] group-hover:h-[140px]">
                 <img
                   src={playlist.imagem_url}
                   alt={playlist.titulo}
@@ -71,35 +71,35 @@ const Pontos = () => {
 
               {/* Conteúdo */}
               <div className="absolute inset-0 flex justify-center items-end overflow-hidden">
-                <div className="p-4 text-center w-full transition-transform duration-500 translate-y-[80px] group-hover:translate-y-0">
-                  <h2 className="text-lg font-semibold text-black">{playlist.titulo}</h2>
-                  <span className="text-sm text-gray-500">{playlist.subtitulo}</span>
+                <div className="p-6 text-center w-full transition-transform duration-500 translate-y-[100px] group-hover:translate-y-0">
+                  <h2 className="text-xl font-semibold text-black mb-2">{playlist.titulo}</h2>
+                  <span className="text-sm text-gray-500 block mb-4">{playlist.subtitulo}</span>
 
-                  <div className="flex justify-between my-4">
+                  <div className="flex justify-between mb-6">
                     <div className="text-center">
-                      <h3 className="font-semibold">{mockPontos.filter(p => p.playlist_id === playlist.id).length}</h3>
-                      <span className="text-sm text-gray-500">Pontos</span>
+                      <h3 className="font-semibold text-lg">{mockPontos.filter(p => p.playlist_id === playlist.id).length}</h3>
+                      <span className="text-xs text-gray-500">Pontos</span>
                     </div>
                     <div className="text-center">
-                      <h3 className="font-semibold">{playlist.num_followers || 0}</h3>
-                      <span className="text-sm text-gray-500">Seguidores</span>
+                      <h3 className="font-semibold text-lg">{playlist.num_followers || 0}</h3>
+                      <span className="text-xs text-gray-500">Seguidores</span>
                     </div>
                     <div className="text-center">
-                      <h3 className="font-semibold">{playlist.num_downloads || 0}</h3>
-                      <span className="text-sm text-gray-500">Downloads</span>
+                      <h3 className="font-semibold text-lg">{playlist.num_downloads || 0}</h3>
+                      <span className="text-xs text-gray-500">Downloads</span>
                     </div>
                   </div>
 
-                  <div className="flex justify-between mt-4 space-x-2">
+                  <div className="flex justify-between space-x-4">
                     <button
                       onClick={() => handleFollow(playlist.id)}
-                      className="px-3 py-1.5 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition-colors"
+                      className="flex-1 px-4 py-2 bg-black text-white text-sm rounded-md hover:bg-gray-800 transition-colors"
                     >
                       Seguir
                     </button>
                     <button
                       onClick={() => handlePlay(playlist)}
-                      className="px-3 py-1.5 border border-black text-black text-sm rounded-md hover:bg-gray-100 transition-colors"
+                      className="flex-1 px-4 py-2 border border-black text-black text-sm rounded-md hover:bg-gray-100 transition-colors"
                     >
                       Reproduzir
                     </button>
