@@ -16,12 +16,12 @@ const Header = () => {
   return (
     <header className="fixed top-12 left-12 z-50 transition-all duration-300">
       <div className="relative">
-        <h1 className={`text-5xl tracking-wider font-semibold transition-all duration-300 ${
+        <h1 className={`text-5xl tracking-wider font-semibold transition-all duration-700 ${
           isScrolled ? 'text-xl' : 'text-5xl'
         }`}>
           UMBANDA
         </h1>
-        <span className={`absolute right-0 bottom-[-1.5rem] font-light tracking-widest uppercase text-sm transition-all duration-300 ${
+        <span className={`absolute right-0 bottom-[-1.5rem] font-light tracking-widest uppercase text-sm transition-all duration-700 ${
           isScrolled ? 'text-xs' : 'text-sm'
         }`}>
           desde 1908

@@ -41,19 +41,19 @@ const Pontos = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#403E43] relative overflow-hidden">
+    <div className="min-h-screen w-full bg-[] relative overflow-hidden">
       <Header />
       <Navigation />
       <div className="fixed top-36 right-24 z-50 md:top-36 sm:right-12 xs:right-6">
         <h2 
-          className={`text-white text-3xl font-medium uppercase tracking-wide transition-all duration-700 ${
+          className={`text-black text-3xl font-medium uppercase tracking-wide transition-all duration-700 ${
             isScrolled ? 'text-xl' : 'text-3xl'
           }`}
         >
           Pontos de Umbanda
         </h2>
       </div>
-      <main className="w-full min-h-screen p-6 md:p-24 pt-72 mt-12">
+      <main className="w-full min-h-screen p-6 md:p-25 pt-72 mt-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 max-w-[1800px] mx-auto">
           {playlists?.map((playlist) => (
             <div key={playlist.id} className="card">
@@ -196,7 +196,7 @@ const Pontos = () => {
           height: 190px;
           background: #FFFFFF;
           border-radius: 20px;
-          box-shadow: 0 35px 80px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
           transition: 0.5s;
         }
 
@@ -213,7 +213,7 @@ const Pontos = () => {
           height: 150px;
           background-color: #FFFFFF;
           border-radius: 20px;
-          box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
           overflow: hidden;
           transition: 0.5s;
         }
