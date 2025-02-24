@@ -9,35 +9,79 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: {
+      historia: {
         Row: {
-          birthday: string | null
+          conteudo: string
           created_at: string
-          full_name: string | null
           id: string
-          orixa: string | null
-          role: Database["public"]["Enums"]["user_role"] | null
-          updated_at: string
         }
         Insert: {
-          birthday?: string | null
+          conteudo: string
           created_at?: string
-          full_name?: string | null
-          id: string
-          orixa?: string | null
-          role?: Database["public"]["Enums"]["user_role"] | null
-          updated_at?: string
+          id?: string
         }
         Update: {
-          birthday?: string | null
+          conteudo?: string
           created_at?: string
-          full_name?: string | null
           id?: string
-          orixa?: string | null
-          role?: Database["public"]["Enums"]["user_role"] | null
-          updated_at?: string
         }
         Relationships: []
+      }
+      playlists: {
+        Row: {
+          created_at: string
+          id: string
+          imagem_url: string
+          titulo: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          imagem_url: string
+          titulo: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          imagem_url?: string
+          titulo?: string
+        }
+        Relationships: []
+      }
+      pontos: {
+        Row: {
+          audio_url: string
+          compositor: string
+          created_at: string
+          id: string
+          playlist_id: string | null
+          titulo: string
+        }
+        Insert: {
+          audio_url: string
+          compositor: string
+          created_at?: string
+          id?: string
+          playlist_id?: string | null
+          titulo: string
+        }
+        Update: {
+          audio_url?: string
+          compositor?: string
+          created_at?: string
+          id?: string
+          playlist_id?: string | null
+          titulo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pontos_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "playlists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -47,7 +91,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      user_role: "admin" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
