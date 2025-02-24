@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../components/Header";
@@ -13,14 +12,12 @@ const Pontos = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
 
-    setIsVisible(true);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -45,11 +42,9 @@ const Pontos = () => {
       <Header />
       <Navigation />
       <div className="fixed top-36 right-24 z-50 md:top-36 sm:right-12 xs:right-6">
-        <h2 
-          className={`text-3xl font-medium uppercase tracking-wide transition-all duration-700 transform ${
-            isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-          } ${isScrolled ? 'text-xl' : 'text-3xl'}`}
-        >
+        <h2 className={`text-3xl font-medium uppercase tracking-wide transition-all duration-300 ${
+          isScrolled ? 'text-xl' : 'text-3xl'
+        }`}>
           Pontos de Umbanda
         </h2>
       </div>
