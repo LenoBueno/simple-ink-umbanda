@@ -41,14 +41,14 @@ const Pontos = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[radial-gradient(#ad0b2b,#9a001c)] relative overflow-hidden">
+    <div className="min-h-screen w-full bg-[#403E43] relative overflow-hidden">
       <Header />
       <Navigation />
       <div className="fixed top-36 right-24 z-50 md:top-36 sm:right-12 xs:right-6">
         <h2 
-          className={`text-white text-3xl font-medium uppercase tracking-wide transition-all duration-700 transform ${
-            isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-          } ${isScrolled ? 'text-xl' : 'text-3xl'}`}
+          className={`text-white text-3xl font-medium uppercase tracking-wide transition-all duration-700 ${
+            isScrolled ? 'text-xl' : 'text-3xl'
+          }`}
         >
           Pontos de Umbanda
         </h2>
@@ -188,12 +188,13 @@ const Pontos = () => {
       </main>
       <Footer />
 
-      <style jsx global>{`
+      <style>
+        {`
         .card {
           position: relative;
           width: 350px;
           height: 190px;
-          background: var(--white);
+          background: #FFFFFF;
           border-radius: 20px;
           box-shadow: 0 35px 80px rgba(0, 0, 0, 0.15);
           transition: 0.5s;
@@ -210,7 +211,7 @@ const Pontos = () => {
           transform: translateX(-50%);
           width: 150px;
           height: 150px;
-          background-color: var(--white);
+          background-color: #FFFFFF;
           border-radius: 20px;
           box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
           overflow: hidden;
@@ -256,7 +257,7 @@ const Pontos = () => {
         .card .content .details h2 {
           font-size: 1.25em;
           font-weight: 600;
-          color: var(--black);
+          color: #403E43;
           line-height: 1.2em;
         }
 
@@ -274,7 +275,7 @@ const Pontos = () => {
 
         .card .content .details .data h3 {
           font-size: 1em;
-          color: var(--black);
+          color: #403E43;
           line-height: 1.2em;
           font-weight: 600;
         }
@@ -288,6 +289,7 @@ const Pontos = () => {
         .card .content .details .actionBtn {
           display: flex;
           justify-content: space-between;
+          gap: 20px;
         }
 
         .card .content .details .actionBtn button {
@@ -297,17 +299,27 @@ const Pontos = () => {
           outline: none;
           font-size: 1em;
           font-weight: 500;
-          background: var(--body4);
-          color: var(--white);
+          background: #403E43;
+          color: #FFFFFF;
           cursor: pointer;
+          transition: 0.3s;
+        }
+
+        .card .content .details .actionBtn button:hover {
+          background: #8A898C;
         }
 
         .card .content .details .actionBtn button:nth-child(2) {
-          border: 1px solid var(--bordertextinput);
-          color: var(--bordertextinput);
-          background: var(--white);
+          border: 1px solid #403E43;
+          color: #403E43;
+          background: #FFFFFF;
         }
-      `}</style>
+
+        .card .content .details .actionBtn button:nth-child(2):hover {
+          background: #F2FCE2;
+        }
+        `}
+      </style>
     </div>
   );
 };
