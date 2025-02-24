@@ -44,7 +44,7 @@ const Pontos = () => {
     <div className="min-h-screen w-full bg-[] relative overflow-hidden">
       <Header />
       <Navigation />
-      <div className="fixed top-36 right-24 z-50 md:top-36 sm:right-12 xs:right-6">
+      <div className="fixed top-36 right-24 z-50 md:top-25 sm:right-10 xs:right-6">
         <h2 
           className={`text-black text-3xl font-medium uppercase tracking-wide transition-all duration-700 ${
             isScrolled ? 'text-xl' : 'text-3xl'

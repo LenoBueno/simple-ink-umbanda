@@ -21,7 +21,7 @@ const Header = () => {
         }`}>
           UMBANDA
         </h1>
-        <span className={`absolute right-0 bottom-[-1.5rem] font-light tracking-widest uppercase text-sm transition-all duration-700 ${
+        <span className={`absolute right-0 top-8[-1.5rem] font-light tracking-widest uppercase text-sm transition-all duration-700 ${
           isScrolled ? 'text-xs' : 'text-sm'
         }`}>
           desde 1908
