@@ -30,10 +30,17 @@ const Navigation = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Função para alternar o modo escuro
+  useEffect(() => {
+    const darkModePreference = localStorage.getItem('darkMode') === 'true';
+    setIsDarkMode(darkModePreference);
+    document.body.classList.toggle('dark-mode', darkModePreference);
+  }, []);
+
   const toggleDarkMode = () => {
-    setIsDarkMode(prevMode => !prevMode);
-    document.body.classList.toggle('dark-mode', !isDarkMode); // Adiciona ou remove a classe para o modo escuro
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    document.body.classList.toggle('dark-mode', newMode);
+    localStorage.setItem('darkMode', newMode.toString());
   };
 
   return (
