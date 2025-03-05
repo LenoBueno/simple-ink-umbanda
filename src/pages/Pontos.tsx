@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../components/Header";
@@ -45,12 +44,8 @@ const Pontos = () => {
       <Header />
       <Navigation />
       <div className="fixed top-36 right-24 z-50 md:top-25 sm:right-10 xs:right-6">
-        <h2 
-          className={`text-black text-3xl font-medium uppercase tracking-wide transition-all duration-700 ${
-            isScrolled ? 'text-xl' : 'text-3xl'
-          }`}
-        >
-          Pontos de Umbanda
+        <h2 className={`text-black text-3xl font-medium uppercase tracking-wide transition-all duration-700`}>
+          {/* Pontos de Umbanda - Removido */}
         </h2>
       </div>
       <main className="w-full min-h-screen p-6 md:p-25 pt-72 mt-12">
