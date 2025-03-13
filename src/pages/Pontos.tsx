@@ -3,9 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
-import { supabase } from "../lib/supabase";
+import { mysql_client } from "../lib/mysql";
 import type { Playlist, Ponto } from "../types";
-import { mockPlaylists, mockPontos } from "../data/mockData";
 import { X, Play, Pause, SkipBack, SkipForward, Volume2, Repeat, List } from 'lucide-react';
 
 const Pontos = () => {
@@ -13,6 +12,7 @@ const Pontos = () => {
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [playlistPontos, setPlaylistPontos] = useState<Ponto[]>([]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,12 +24,38 @@ const Pontos = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const { data: playlists } = useQuery({
+  const { data: playlists, isLoading } = useQuery({
     queryKey: ['playlists'],
     queryFn: async () => {
-      return mockPlaylists;
+      const { data, error } = await mysql_client
+        .from('playlists')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .execute();
+      
+      if (error) throw error;
+      return data as Playlist[];
     }
   });
+
+  // Fetch pontos for selected playlist
+  useEffect(() => {
+    if (selectedPlaylist) {
+      const fetchPontos = async () => {
+        const { data, error } = await mysql_client
+          .from('pontos')
+          .select('*')
+          .eq('playlist_id', selectedPlaylist.id)
+          .execute();
+        
+        if (!error && data) {
+          setPlaylistPontos(data as Ponto[]);
+        }
+      };
+      
+      fetchPontos();
+    }
+  }, [selectedPlaylist]);
 
   const handleFollow = (playlistId: string) => {
     console.log("Seguir playlist:", playlistId);
@@ -49,48 +75,59 @@ const Pontos = () => {
         </h2>
       </div>
       <main className="w-full min-h-screen p-6 md:p-25 pt-72 mt-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 max-w-[1800px] mx-auto">
-          {playlists?.map((playlist) => (
-            <div key={playlist.id} className="card">
-              <div className="imgBx">
-                <img
-                  src={playlist.imagem_url}
-                  alt={playlist.titulo}
-                />
-              </div>
-              <div className="content">
-                <div className="details">
-                  <h2>{playlist.titulo}<br /><span>{playlist.subtitulo}</span></h2>
-                  <div className="data">
-                    <h3>
-                      {mockPontos.filter(p => p.playlist_id === playlist.id).length}
-                      <br />
-                      <span>Pontos</span>
-                    </h3>
-                    <h3>
-                      {playlist.num_followers || 0}
-                      <br />
-                      <span>Seguidores</span>
-                    </h3>
-                    <h3>
-                      {playlist.num_downloads || 0}
-                      <br />
-                      <span>Downloads</span>
-                    </h3>
-                  </div>
-                  <div className="actionBtn">
-                    <button onClick={() => handleFollow(playlist.id)}>
-                      Seguir
-                    </button>
-                    <button onClick={() => handlePlay(playlist)}>
-                      Reproduzir
-                    </button>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-xl">Carregando playlists...</p>
+          </div>
+        ) : playlists && playlists.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 max-w-[1800px] mx-auto">
+            {playlists.map((playlist) => (
+              <div key={playlist.id} className="card">
+                <div className="imgBx">
+                  <img
+                    src={playlist.imagem_url}
+                    alt={playlist.titulo}
+                  />
+                </div>
+                <div className="content">
+                  <div className="details">
+                    <h2>{playlist.titulo}<br /><span>{playlist.subtitulo}</span></h2>
+                    <div className="data">
+                      <h3>
+                        {playlist.num_pontos || 0}
+                        <br />
+                        <span>Pontos</span>
+                      </h3>
+                      <h3>
+                        {playlist.num_followers || 0}
+                        <br />
+                        <span>Seguidores</span>
+                      </h3>
+                      <h3>
+                        {playlist.num_downloads || 0}
+                        <br />
+                        <span>Downloads</span>
+                      </h3>
+                    </div>
+                    <div className="actionBtn">
+                      <button onClick={() => handleFollow(playlist.id)}>
+                        Seguir
+                      </button>
+                      <button onClick={() => handlePlay(playlist)}>
+                        Reproduzir
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-64">
+            <p className="text-xl mb-4">Nenhuma playlist disponível no momento.</p>
+            <p className="text-gray-500">As novas playlists aparecerão aqui quando forem adicionadas.</p>
+          </div>
+        )}
 
         {/* Player inline */}
         {selectedPlaylist && (
@@ -162,20 +199,26 @@ const Pontos = () => {
 
               {/* Playlist */}
               <div className="border-t pt-4">
-                <div className="space-y-2">
-                  {mockPontos.slice(0, 5).map((ponto) => (
-                    <div key={ponto.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
-                      <div className="flex items-center space-x-3">
-                        <img src={selectedPlaylist.imagem_url} alt={ponto.titulo} className="w-10 h-10 rounded object-cover" />
-                        <div>
-                          <p className="font-medium">{ponto.titulo}</p>
-                          <p className="text-sm text-gray-500">{selectedPlaylist.titulo}</p>
+                {playlistPontos.length > 0 ? (
+                  <div className="space-y-2">
+                    {playlistPontos.map((ponto) => (
+                      <div key={ponto.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                        <div className="flex items-center space-x-3">
+                          <img src={selectedPlaylist.imagem_url} alt={ponto.titulo} className="w-10 h-10 rounded object-cover" />
+                          <div>
+                            <p className="font-medium">{ponto.titulo}</p>
+                            <p className="text-sm text-gray-500">{selectedPlaylist.titulo}</p>
+                          </div>
                         </div>
+                        <span className="text-sm text-gray-500">3:45</span>
                       </div>
-                      <span className="text-sm text-gray-500">3:45</span>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-4 text-center">
+                    <p className="text-gray-500">Nenhum ponto disponível nesta playlist.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -199,26 +242,26 @@ const Pontos = () => {
           height: 450px;
         }
 
-        .imgBx {
+        .card .imgBx {
           position: absolute;
           left: 50%;
           top: -50px;
           transform: translateX(-50%);
           width: 150px;
           height: 150px;
-          background-color: #FFFFFF;
+          background: #FFFFFF;
           border-radius: 20px;
-          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.35);
+          box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35);
           overflow: hidden;
           transition: 0.5s;
         }
 
         .card:hover .imgBx {
-          width: 200px;
-          height: 200px;
+          width: 250px;
+          height: 250px;
         }
 
-        .imgBx img {
+        .card .imgBx img {
           position: absolute;
           top: 0;
           left: 0;
@@ -252,7 +295,7 @@ const Pontos = () => {
         .card .content .details h2 {
           font-size: 1.25em;
           font-weight: 600;
-          color: #403E43;
+          color: #555;
           line-height: 1.2em;
         }
 
@@ -270,7 +313,7 @@ const Pontos = () => {
 
         .card .content .details .data h3 {
           font-size: 1em;
-          color: #403E43;
+          color: #555;
           line-height: 1.2em;
           font-weight: 600;
         }
@@ -294,24 +337,15 @@ const Pontos = () => {
           outline: none;
           font-size: 1em;
           font-weight: 500;
-          background: #403E43;
+          background: #000000;
           color: #FFFFFF;
           cursor: pointer;
-          transition: 0.3s;
-        }
-
-        .card .content .details .actionBtn button:hover {
-          background: #8A898C;
         }
 
         .card .content .details .actionBtn button:nth-child(2) {
-          border: 1px solid #403E43;
-          color: #403E43;
+          border: 1px solid #999;
+          color: #999;
           background: #FFFFFF;
-        }
-
-        .card .content .details .actionBtn button:nth-child(2):hover {
-          background: #F2FCE2;
         }
         `}
       </style>

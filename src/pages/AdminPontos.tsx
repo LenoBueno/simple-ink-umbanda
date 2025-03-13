@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 import CreatePlaylist from "../components/admin/CreatePlaylist";
 import PlaylistSelector from "../components/admin/PlaylistSelector";
 import PontoForm from "../components/admin/PontoForm";
-import { supabase } from "../lib/supabase";
+import { mysql_client } from "../lib/mysql";
 import type { Playlist } from "../types";
 
 const AdminPontos = () => {
@@ -18,10 +18,11 @@ const AdminPontos = () => {
   const { data: playlists, refetch: refetchPlaylists } = useQuery({
     queryKey: ['playlists'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await mysql_client
         .from('playlists')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .execute();
       
       if (error) throw error;
       return data as Playlist[];
@@ -53,6 +54,7 @@ const AdminPontos = () => {
               playlists={playlists || []}
               selectedPlaylist={selectedPlaylist}
               onSelect={setSelectedPlaylist}
+              onRefresh={refetchPlaylists}
             />
 
             {selectedPlaylist && (

@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
+import { mysql_client } from "@/lib/mysql";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PontoFormProps {
   playlistId: string;
@@ -10,6 +11,7 @@ interface PontoFormProps {
 const PontoForm = ({ playlistId }: PontoFormProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleAddPonto = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,28 +26,32 @@ const PontoForm = ({ playlistId }: PontoFormProps) => {
     try {
       // Upload do áudio
       const audioPath = `ponto-${Date.now()}`;
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await mysql_client.storage
         .from('audios')
         .upload(audioPath, audio);
 
       if (uploadError) throw uploadError;
 
       // Get audio URL
-      const { data: { publicUrl: audio_url } } = supabase.storage
+      const { publicUrl: audio_url } = mysql_client.storage
         .from('audios')
         .getPublicUrl(audioPath);
 
       // Create ponto
-      const { error: insertError } = await supabase
+      const { error: insertError } = await mysql_client
         .from('pontos')
         .insert({
           playlist_id: playlistId,
           titulo,
           compositor,
           audio_url
-        });
+        })
+        .execute();
 
       if (insertError) throw insertError;
+
+      // Invalidate queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['playlists'] });
 
       toast({
         title: "Sucesso!",

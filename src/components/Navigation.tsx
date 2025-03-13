@@ -3,23 +3,16 @@ import { Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { IonIcon } from '@ionic/react';
 import {
-  home as homeOutline,
-  home,
+  homeOutline,
   playOutline,
-  play,
   readerOutline,
-  reader,
   settingsOutline,
-  settings,
   reorderFour,
-  moonOutline,
-  sunnyOutline,
 } from 'ionicons/icons';
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,19 +22,6 @@ const Navigation = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    const darkModePreference = localStorage.getItem('darkMode') === 'true';
-    setIsDarkMode(darkModePreference);
-    document.body.classList.toggle('dark-mode', darkModePreference);
-  }, []);
-
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    document.body.classList.toggle('dark-mode', newMode);
-    localStorage.setItem('darkMode', newMode.toString());
-  };
 
   return (
     <nav className="fixed top-12 right-12 z-50 md:right-8 sm:right-4">
@@ -62,7 +42,7 @@ const Navigation = () => {
                   className="nav-link block"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <IonIcon icon={isDarkMode ? home : homeOutline} />
+                  <IonIcon icon={homeOutline} />
                 </Link>
               </li>
               <li className="mb-4">
@@ -71,7 +51,7 @@ const Navigation = () => {
                   className="nav-link block"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <IonIcon icon={isDarkMode ? play : playOutline} />
+                  <IonIcon icon={playOutline} />
                 </Link>
               </li>
               <li>
@@ -80,7 +60,7 @@ const Navigation = () => {
                   className="nav-link block"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <IonIcon icon={isDarkMode ? reader : readerOutline} />
+                  <IonIcon icon={readerOutline} />
                 </Link>
               </li>
               <li>
@@ -89,7 +69,7 @@ const Navigation = () => {
                   className="nav-link block"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <IonIcon icon={isDarkMode ? settings : settingsOutline} />
+                  <IonIcon icon={settingsOutline} />
                 </Link>
               </li>
             </ul>
@@ -98,20 +78,18 @@ const Navigation = () => {
       ) : (
         <ul className="flex space-x-12 items-center md:space-x-8 sm:space-x-4">
           <Link to="/" className="nav-link">
-            <IonIcon icon={isDarkMode ? home : homeOutline} />
+            <IonIcon icon={homeOutline} />
           </Link>
           <Link to="/pontos" className="nav-link">
-            <IonIcon icon={isDarkMode ? play : playOutline} />
+            <IonIcon icon={playOutline} />
           </Link>
           <Link to="/historia" className="nav-link">
-            <IonIcon icon={isDarkMode ? reader : readerOutline} />
+            <IonIcon icon={readerOutline} />
           </Link>
           <Link to="/admin" className="nav-link">
-            <IonIcon icon={isDarkMode ? settings : settingsOutline} />
+            <IonIcon icon={settingsOutline} />
           </Link>
-          <button onClick={toggleDarkMode} className="nav-link">
-            <IonIcon icon={isDarkMode ? sunnyOutline : moonOutline} />
-          </button>
+
         </ul>
       )}
     </nav>

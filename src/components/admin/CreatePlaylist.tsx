@@ -1,8 +1,8 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
-import type { Playlist } from "@/types";
+import { mysql_client } from "@/lib/mysql";
+import type { Playlist, Ponto } from "@/types";
 
 interface CreatePlaylistProps {
   onSuccess: () => void;
@@ -10,6 +10,8 @@ interface CreatePlaylistProps {
 
 const CreatePlaylist = ({ onSuccess }: CreatePlaylistProps) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [pontos, setPontos] = useState<Ponto[]>([]);
+  const [showPontoForm, setShowPontoForm] = useState(false);
   const { toast } = useToast();
 
   const handleCreatePlaylist = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -25,23 +27,42 @@ const CreatePlaylist = ({ onSuccess }: CreatePlaylistProps) => {
     try {
       // Upload da imagem
       const imagePath = `playlist-${Date.now()}`;
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await mysql_client.storage
         .from('imagens')
         .upload(imagePath, imagem);
 
       if (uploadError) throw uploadError;
 
       // Get image URL
-      const { data: { publicUrl: imagem_url } } = supabase.storage
+      const { publicUrl: imagem_url } = mysql_client.storage
         .from('imagens')
         .getPublicUrl(imagePath);
 
       // Create playlist
-      const { error: insertError } = await supabase
+      const { data: playlistData, error: insertError } = await mysql_client
         .from('playlists')
-        .insert({ titulo, compositor, imagem_url });
+        .insert({ titulo, compositor, imagem_url })
+        .execute();
 
       if (insertError) throw insertError;
+      
+      // Se temos pontos para adicionar e a playlist foi criada com sucesso
+      if (pontos.length > 0 && playlistData && playlistData.length > 0) {
+        const playlistId = playlistData[0].id;
+        
+        // Adicionar cada ponto à playlist
+        for (const ponto of pontos) {
+          const { error: pontoError } = await mysql_client
+            .from('pontos')
+            .update({ playlist_id: playlistId })
+            .eq('id', ponto.id)
+            .execute();
+            
+          if (pontoError) {
+            console.error("Erro ao adicionar ponto à playlist:", pontoError);
+          }
+        }
+      }
 
       toast({
         title: "Sucesso!",
@@ -49,6 +70,8 @@ const CreatePlaylist = ({ onSuccess }: CreatePlaylistProps) => {
       });
 
       form.reset();
+      setPontos([]);
+      setShowPontoForm(false);
       onSuccess();
     } catch (error) {
       toast({
@@ -59,6 +82,69 @@ const CreatePlaylist = ({ onSuccess }: CreatePlaylistProps) => {
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleAddPonto = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsUploading(true);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const titulo = formData.get('titulo') as string;
+    const compositor = formData.get('compositor') as string;
+    const audio = formData.get('audio') as File;
+
+    try {
+      // Upload do áudio
+      const audioPath = `ponto-${Date.now()}`;
+      const { error: uploadError } = await mysql_client.storage
+        .from('audios')
+        .upload(audioPath, audio);
+
+      if (uploadError) throw uploadError;
+
+      // Get audio URL
+      const { publicUrl: audio_url } = mysql_client.storage
+        .from('audios')
+        .getPublicUrl(audioPath);
+
+      // Create ponto (sem playlist_id por enquanto)
+      const { data, error: insertError } = await mysql_client
+        .from('pontos')
+        .insert({
+          playlist_id: null,
+          titulo,
+          compositor,
+          audio_url
+        })
+        .execute();
+
+      if (insertError) throw insertError;
+
+      // Adicionar o ponto à lista local
+      if (data && data.length > 0) {
+        setPontos([...pontos, data[0] as Ponto]);
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Ponto adicionado com sucesso.",
+      });
+
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Erro!",
+        description: "Não foi possível adicionar o ponto.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRemovePonto = (pontoId: string) => {
+    setPontos(pontos.filter(p => p.id !== pontoId));
   };
 
   return (
@@ -102,14 +188,102 @@ const CreatePlaylist = ({ onSuccess }: CreatePlaylistProps) => {
             className="w-full p-2 border rounded"
           />
         </div>
-        <button
-          type="submit"
-          disabled={isUploading}
-          className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:opacity-50"
-        >
-          {isUploading ? "Criando..." : "Criar Playlist"}
-        </button>
+        
+        {/* Lista de pontos adicionados */}
+        {pontos.length > 0 && (
+          <div className="mt-4">
+            <h4 className="text-md font-medium mb-2">Pontos adicionados:</h4>
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {pontos.map((ponto) => (
+                <div key={ponto.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                  <div>
+                    <p className="font-medium">{ponto.titulo}</p>
+                    <p className="text-sm text-gray-500">{ponto.compositor}</p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => handleRemovePonto(ponto.id)}
+                    className="p-1 text-red-500 hover:text-red-700"
+                  >
+                    Remover
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <div className="flex justify-between items-center">
+          <button
+            type="submit"
+            disabled={isUploading}
+            className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 disabled:opacity-50"
+          >
+            {isUploading ? "Criando..." : "Criar Playlist"}
+          </button>
+          
+          <button 
+            type="button" 
+            onClick={() => setShowPontoForm(!showPontoForm)}
+            className="px-4 py-2 border rounded hover:bg-gray-50"
+          >
+            {showPontoForm ? "Ocultar formulário" : "Adicionar pontos"}
+          </button>
+        </div>
       </form>
+      
+      {/* Formulário para adicionar pontos */}
+      {showPontoForm && (
+        <div className="mt-6 p-4 border rounded-lg bg-gray-50">
+          <h4 className="text-md font-medium mb-4">Adicionar Ponto</h4>
+          <form onSubmit={handleAddPonto} className="space-y-4">
+            <div>
+              <label htmlFor="ponto-titulo" className="block text-sm font-medium mb-2">
+                Título do Ponto
+              </label>
+              <input
+                id="ponto-titulo"
+                name="titulo"
+                type="text"
+                required
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label htmlFor="ponto-compositor" className="block text-sm font-medium mb-2">
+                Compositor
+              </label>
+              <input
+                id="ponto-compositor"
+                name="compositor"
+                type="text"
+                required
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label htmlFor="audio" className="block text-sm font-medium mb-2">
+                Arquivo de Áudio
+              </label>
+              <input
+                id="audio"
+                name="audio"
+                type="file"
+                accept="audio/*"
+                required
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={isUploading}
+              className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 disabled:opacity-50"
+            >
+              {isUploading ? "Adicionando..." : "Adicionar Ponto"}
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
