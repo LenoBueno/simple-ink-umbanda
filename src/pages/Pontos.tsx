@@ -190,10 +190,20 @@ const Pontos = () => {
         }
       }
       
-      // Garantir que áudios sejam buscados do diretório correto
-      if (!audioUrl.includes('/audios/')) {
+      // Verificar se o áudio está na pasta de imagens (erro comum) ou na pasta de áudios
+      if (audioUrl.includes('/imagens/')) {
+        // Se estiver na pasta de imagens, manter o caminho original
+        // Apenas garantir que a URL base esteja correta
+        if (!audioUrl.startsWith('http')) {
+          audioUrl = `http://localhost:3000${audioUrl}`;
+        }
+      } else if (!audioUrl.includes('/audios/')) {
+        // Se não estiver em nenhuma pasta específica, tentar na pasta de áudios
         const fileName = audioUrl.split('/').pop();
         audioUrl = `http://localhost:3000/api/files/audios/${fileName}`;
+        
+        // Se o arquivo não existir na pasta de áudios, tentar na pasta de imagens
+        // (isso será tratado pelo catch do playPromise se falhar)
       }
       
       console.log('Tentando reproduzir áudio:', audioUrl);
@@ -206,7 +216,21 @@ const Pontos = () => {
         if (playPromise !== undefined) {
           playPromise.catch(error => {
             console.error("Erro ao reproduzir áudio:", error);
-            setIsPlaying(false);
+            console.log("URL do áudio que falhou:", audioRef.current.src);
+            
+            // Tentar reproduzir da pasta de imagens se falhar na pasta de áudios
+            if (audioRef.current.src.includes('/audios/')) {
+              const fileName = audioRef.current.src.split('/').pop();
+              const newUrl = `http://localhost:3000/api/files/imagens/${fileName}`;
+              console.log("Tentando URL alternativa:", newUrl);
+              audioRef.current.src = newUrl;
+              audioRef.current.play().catch(err => {
+                console.error("Erro ao reproduzir áudio (segunda tentativa):", err);
+                setIsPlaying(false);
+              });
+            } else {
+              setIsPlaying(false);
+            }
           });
         }
       }

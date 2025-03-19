@@ -125,8 +125,8 @@ const EditPlaylist = ({ playlist, onSuccess, onCancel }: EditPlaylistProps) => {
         .from('audios')
         .getPublicUrl(audioPath);
 
-      // Ensure the URL points to the correct directory
-      const finalAudioUrl = audio_url.replace('/imagens/', '/audios/');
+      // Não precisamos mais substituir '/imagens/' por '/audios/' pois isso pode causar problemas
+      // quando a URL não contém '/imagens/'. Vamos garantir que a URL seja usada como está.
 
 
       // Create ponto
@@ -136,7 +136,7 @@ const EditPlaylist = ({ playlist, onSuccess, onCancel }: EditPlaylistProps) => {
           playlist_id: playlist.id,
           titulo,
           compositor,
-          audio_url: finalAudioUrl
+          audio_url: audio_url
         })
         .execute();
 

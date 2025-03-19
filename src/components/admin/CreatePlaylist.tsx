@@ -107,6 +107,8 @@ const CreatePlaylist = ({ onSuccess }: CreatePlaylistProps) => {
       const { publicUrl: audio_url } = mysql_client.storage
         .from('audios')
         .getPublicUrl(audioPath);
+      
+      // Garantir que a URL seja usada como está, sem modificações
 
       // Create ponto (sem playlist_id por enquanto)
       const { data, error: insertError } = await mysql_client
