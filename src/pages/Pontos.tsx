@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
@@ -13,6 +13,11 @@ const Pontos = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [playlistPontos, setPlaylistPontos] = useState<Ponto[]>([]);
+  const [currentPonto, setCurrentPonto] = useState<Ponto | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(0.7);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,8 +66,172 @@ const Pontos = () => {
     console.log("Seguir playlist:", playlistId);
   };
 
+  // Função para reproduzir uma playlist
   const handlePlay = (playlist: Playlist) => {
     setSelectedPlaylist(playlist);
+    
+    // Buscar os pontos da playlist e iniciar a reprodução do primeiro ponto
+    const fetchPontosAndPlay = async () => {
+      const { data, error } = await mysql_client
+        .from('pontos')
+        .select('*')
+        .eq('playlist_id', playlist.id)
+        .execute();
+      
+      if (!error && data && data.length > 0) {
+        const pontos = data as Ponto[];
+        setPlaylistPontos(pontos);
+        // Reproduzir o primeiro ponto automaticamente
+        playPonto(pontos[0]);
+      }
+    };
+    
+    fetchPontosAndPlay();
+  };
+
+  // Função para formatar o tempo em minutos:segundos
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Atualizar o tempo atual durante a reprodução
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  // Manipular o fim da reprodução
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
+  };
+
+  // Manipular o carregamento dos metadados do áudio
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  // Controlar a reprodução (play/pause)
+  const togglePlay = () => {
+    if (!currentPonto) return;
+    
+    if (isPlaying) {
+      audioRef.current?.pause();
+    } else {
+      audioRef.current?.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  // Controlar o volume
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+    }
+  };
+
+  // Controlar a posição da reprodução
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const seekTime = parseFloat(e.target.value);
+    setCurrentTime(seekTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = seekTime;
+    }
+  };
+
+  // Reproduzir um ponto específico
+  const playPonto = (ponto: Ponto) => {
+    setCurrentPonto(ponto);
+    setCurrentTime(0);
+    setIsPlaying(true);
+    
+    // Aguardar o próximo ciclo para garantir que o audioRef foi atualizado
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.play();
+      }
+    }, 100);
+  };
+
+  // Atualizar o volume do áudio quando o componente é montado ou quando o volume é alterado
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume, currentPonto]);
+
+  // Efeito para atualizar o áudio quando o ponto atual muda
+  useEffect(() => {
+    if (currentPonto && audioRef.current) {
+      // Quando o src do áudio muda, o navegador automaticamente carrega o novo áudio
+      // Após o carregamento, o evento onLoadedMetadata será disparado
+      
+      // Verificar se a URL do áudio está correta
+      let audioUrl = currentPonto.audio_url;
+      
+      // Corrigir a URL do áudio para apontar para o caminho correto da API
+      if (!audioUrl.startsWith('http')) {
+        // Se não for uma URL completa, adicionar o prefixo da API
+        if (audioUrl.startsWith('/')) {
+          audioUrl = `http://localhost:3000${audioUrl}`;
+        } else {
+          audioUrl = `http://localhost:3000/api/files/${audioUrl}`;
+        }
+      }
+      
+      // Se a URL contém '/audios/' mas o arquivo não existe, tente buscar em '/imagens/'
+      if (audioUrl.includes('/audios/')) {
+        const fileName = audioUrl.split('/').pop();
+        // Tentar primeiro com o caminho completo da API
+        audioUrl = `http://localhost:3000/api/files/imagens/${fileName}`;
+      }
+      
+      console.log('Tentando reproduzir áudio:', audioUrl);
+      audioRef.current.src = audioUrl;
+      
+      if (isPlaying) {
+        const playPromise = audioRef.current.play();
+        
+        // Tratamento de erro para reprodução de áudio (necessário para alguns navegadores)
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.error("Erro ao reproduzir áudio:", error);
+            setIsPlaying(false);
+          });
+        }
+      }
+    }
+  }, [currentPonto, isPlaying]);
+
+  // Próximo ponto
+  const playNextPonto = () => {
+    if (!currentPonto || playlistPontos.length === 0) return;
+    
+    const currentIndex = playlistPontos.findIndex(p => p.id === currentPonto.id);
+    if (currentIndex < playlistPontos.length - 1) {
+      playPonto(playlistPontos[currentIndex + 1]);
+    }
+  };
+
+  // Ponto anterior
+  const playPreviousPonto = () => {
+    if (!currentPonto || playlistPontos.length === 0) return;
+    
+    const currentIndex = playlistPontos.findIndex(p => p.id === currentPonto.id);
+    if (currentIndex > 0) {
+      playPonto(playlistPontos[currentIndex - 1]);
+    }
   };
 
   return (
@@ -74,6 +243,16 @@ const Pontos = () => {
           {/* Pontos de Umbanda - Removido */}
         </h2>
       </div>
+      
+      {/* Elemento de áudio oculto */}
+      <audio
+        ref={audioRef}
+        src={currentPonto?.audio_url}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={handleEnded}
+        onLoadedMetadata={handleLoadedMetadata}
+        style={{ display: 'none' }}
+      />
       <main className="w-full min-h-screen p-6 md:p-25 pt-72 mt-12">
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -156,28 +335,42 @@ const Pontos = () => {
 
               {/* Progress bar */}
               <div className="mb-6">
-                <div className="h-1 w-full bg-gray-200 rounded-full">
-                  <div className="h-1 w-1/3 bg-black rounded-full"></div>
-                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max={duration}
+                  value={currentTime}
+                  onChange={handleSeek}
+                  className="w-full h-1 bg-gray-200 rounded-full appearance-none cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, black ${(currentTime / duration) * 100}%, #e5e7eb ${(currentTime / duration) * 100}%)`
+                  }}
+                />
                 <div className="flex justify-between text-sm text-gray-500 mt-1">
-                  <span>1:20</span>
-                  <span>3:45</span>
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
                 </div>
               </div>
 
               {/* Controls */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-6">
-                  <button className="text-gray-700 hover:text-black">
+                  <button 
+                    className="text-gray-700 hover:text-black"
+                    onClick={playPreviousPonto}
+                  >
                     <SkipBack size={24} />
                   </button>
                   <button 
                     className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800"
-                    onClick={() => setIsPlaying(!isPlaying)}
+                    onClick={togglePlay}
                   >
                     {isPlaying ? <Pause size={24} /> : <Play size={24} />}
                   </button>
-                  <button className="text-gray-700 hover:text-black">
+                  <button 
+                    className="text-gray-700 hover:text-black"
+                    onClick={playNextPonto}
+                  >
                     <SkipForward size={24} />
                   </button>
                 </div>
@@ -187,9 +380,18 @@ const Pontos = () => {
                   </button>
                   <div className="flex items-center space-x-2">
                     <Volume2 size={20} className="text-gray-700" />
-                    <div className="w-24 h-1 bg-gray-200 rounded-full">
-                      <div className="h-1 w-2/3 bg-black rounded-full"></div>
-                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={volume}
+                      onChange={handleVolumeChange}
+                      className="w-24 h-1 bg-gray-200 rounded-full appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, black ${volume * 100}%, #e5e7eb ${volume * 100}%)`
+                      }}
+                    />
                   </div>
                   <button className="text-gray-700 hover:text-black">
                     <List size={20} />
@@ -202,15 +404,19 @@ const Pontos = () => {
                 {playlistPontos.length > 0 ? (
                   <div className="space-y-2">
                     {playlistPontos.map((ponto) => (
-                      <div key={ponto.id} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                      <div 
+                        key={ponto.id} 
+                        className={`flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg cursor-pointer ${currentPonto?.id === ponto.id ? 'bg-gray-100' : ''}`}
+                        onClick={() => playPonto(ponto)}
+                      >
                         <div className="flex items-center space-x-3">
                           <img src={selectedPlaylist.imagem_url} alt={ponto.titulo} className="w-10 h-10 rounded object-cover" />
                           <div>
                             <p className="font-medium">{ponto.titulo}</p>
-                            <p className="text-sm text-gray-500">{selectedPlaylist.titulo}</p>
+                            <p className="text-sm text-gray-500">{ponto.compositor}</p>
                           </div>
                         </div>
-                        <span className="text-sm text-gray-500">3:45</span>
+                        <span className="text-sm text-gray-500">{currentPonto?.id === ponto.id && isPlaying ? 'Reproduzindo' : ''}</span>
                       </div>
                     ))}
                   </div>
