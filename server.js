@@ -11,6 +11,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware para garantir que todas as respostas da API sejam JSON
+app.use((req, res, next) => {
+  res.header('Content-Type', 'application/json');
+  next();
+});
+
 // Configuração para upload de arquivos
 import multer from 'multer';
 import fs from 'fs';
@@ -98,6 +104,19 @@ app.get('/api/playlists', async (req, res) => {
   }
 });
 
+// Rota para obter uma playlist específica por ID
+app.get('/api/playlists/:id', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM playlists WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ data: null, error: 'Playlist não encontrada' });
+    }
+    res.json({ data: rows[0], error: null });
+  } catch (error) {
+    res.status(500).json({ data: null, error: error.message });
+  }
+});
+
 app.post('/api/playlists', async (req, res) => {
   try {
     const { titulo, subtitulo, imagem_url, compositor } = req.body;
@@ -106,6 +125,56 @@ app.post('/api/playlists', async (req, res) => {
       'INSERT INTO playlists (id, titulo, subtitulo, imagem_url, compositor) VALUES (?, ?, ?, ?, ?)',
       [id, titulo, subtitulo, imagem_url, compositor]
     );
+    res.json({ data: { id }, error: null });
+  } catch (error) {
+    res.status(500).json({ data: null, error: error.message });
+  }
+});
+
+// Rota para atualizar uma playlist existente
+app.put('/api/playlists/:id', async (req, res) => {
+  try {
+    const { titulo, subtitulo, imagem_url, compositor } = req.body;
+    const { id } = req.params;
+    
+    // Construir a query dinamicamente com base nos campos fornecidos
+    let updateFields = [];
+    let updateValues = [];
+    
+    if (titulo !== undefined) {
+      updateFields.push('titulo = ?');
+      updateValues.push(titulo);
+    }
+    
+    if (subtitulo !== undefined) {
+      updateFields.push('subtitulo = ?');
+      updateValues.push(subtitulo);
+    }
+    
+    if (imagem_url !== undefined) {
+      updateFields.push('imagem_url = ?');
+      updateValues.push(imagem_url);
+    }
+    
+    if (compositor !== undefined) {
+      updateFields.push('compositor = ?');
+      updateValues.push(compositor);
+    }
+    
+    // Adicionar o ID ao final dos valores
+    updateValues.push(id);
+    
+    if (updateFields.length === 0) {
+      return res.status(400).json({ data: null, error: 'Nenhum campo para atualizar' });
+    }
+    
+    const query = `UPDATE playlists SET ${updateFields.join(', ')} WHERE id = ?`;
+    const [result] = await pool.query(query, updateValues);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ data: null, error: 'Playlist não encontrada' });
+    }
+    
     res.json({ data: { id }, error: null });
   } catch (error) {
     res.status(500).json({ data: null, error: error.message });
@@ -141,6 +210,93 @@ app.post('/api/pontos', async (req, res) => {
     );
     res.json({ data: { id }, error: null });
   } catch (error) {
+    res.status(500).json({ data: null, error: error.message });
+  }
+});
+
+// Rota para atualizar um ponto existente
+app.put('/api/pontos/:id', async (req, res) => {
+  try {
+    const { playlist_id, titulo, compositor, audio_url } = req.body;
+    const { id } = req.params;
+    
+    // Construir a query dinamicamente com base nos campos fornecidos
+    let updateFields = [];
+    let updateValues = [];
+    
+    if (playlist_id !== undefined) {
+      updateFields.push('playlist_id = ?');
+      updateValues.push(playlist_id);
+    }
+    
+    if (titulo !== undefined) {
+      updateFields.push('titulo = ?');
+      updateValues.push(titulo);
+    }
+    
+    if (compositor !== undefined) {
+      updateFields.push('compositor = ?');
+      updateValues.push(compositor);
+    }
+    
+    if (audio_url !== undefined) {
+      updateFields.push('audio_url = ?');
+      updateValues.push(audio_url);
+    }
+    
+    // Adicionar o ID ao final dos valores
+    updateValues.push(id);
+    
+    if (updateFields.length === 0) {
+      return res.status(400).json({ data: null, error: 'Nenhum campo para atualizar' });
+    }
+    
+    const query = `UPDATE pontos SET ${updateFields.join(', ')} WHERE id = ?`;
+    const [result] = await pool.query(query, updateValues);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ data: null, error: 'Ponto não encontrado' });
+    }
+    
+    res.json({ data: { id }, error: null });
+  } catch (error) {
+    res.status(500).json({ data: null, error: error.message });
+  }
+});
+
+// Rota para excluir uma playlist
+app.delete('/api/playlists/:id', async (req, res) => {
+  console.log('Requisição para excluir playlist com ID:', req.params.id);
+  try {
+    const { id } = req.params;
+    
+    // Primeiro, verificamos se a playlist existe
+    const [playlist] = await pool.query('SELECT * FROM playlists WHERE id = ?', [id]);
+    
+    if (playlist.length === 0) {
+      return res.status(404).json({ data: null, error: 'Playlist não encontrada' });
+    }
+    
+    // Verificamos se há pontos associados a esta playlist
+    const [pontos] = await pool.query('SELECT * FROM pontos WHERE playlist_id = ?', [id]);
+    
+    // Se houver pontos, removemos a associação (não excluímos os pontos)
+    if (pontos.length > 0) {
+      console.log(`Desassociando ${pontos.length} pontos da playlist ${id}`);
+      await pool.query('UPDATE pontos SET playlist_id = NULL WHERE playlist_id = ?', [id]);
+    }
+    
+    // Agora excluímos a playlist
+    const [result] = await pool.query('DELETE FROM playlists WHERE id = ?', [id]);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ data: null, error: 'Playlist não encontrada' });
+    }
+    
+    console.log(`Playlist ${id} excluída com sucesso`);
+    res.json({ data: { id }, error: null });
+  } catch (error) {
+    console.error('Erro ao excluir playlist:', error);
     res.status(500).json({ data: null, error: error.message });
   }
 });
