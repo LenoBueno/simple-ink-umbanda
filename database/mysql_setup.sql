@@ -89,7 +89,7 @@ DELIMITER ;
 INSERT INTO historia (id, conteudo) VALUES (UUID(), 'Conteúdo padrão da história da Umbanda.');
 
 -- Create a user for the application
-CREATE USER IF NOT EXISTS 'umbanda_user'@'localhost' IDENTIFIED BY 'StrongPassword123!';
+CREATE USER IF NOT EXISTS 'umbanda_user'@'localhost' IDENTIFIED BY 'T!8f@K9#e2$BqV1zP&0o';
 GRANT SELECT, INSERT, UPDATE, DELETE ON simple_ink_umbanda.* TO 'umbanda_user'@'localhost';
 FLUSH PRIVILEGES;
 
@@ -98,7 +98,7 @@ FLUSH PRIVILEGES;
 -- const connection = mysql.createConnection({
 --   host: 'localhost',
 --   user: 'umbanda_user',
---   password: 'StrongPassword123!',
+--   password: 'T!8f@K9#e2$BqV1zP&0o',
 --   database: 'simple_ink_umbanda'
 -- });
 

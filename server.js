@@ -12,15 +12,51 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Configuração para upload de arquivos
-app.post('/api/upload', async (req, res) => {
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+
+// Garantir que os diretórios de upload existam
+const uploadDirs = ['uploads/imagens', 'uploads/audios'];
+for (const dir of uploadDirs) {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+// Configurar o multer para upload de arquivos
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const bucket = req.body.bucket || 'imagens';
+    cb(null, `uploads/${bucket}`);
+  },
+  filename: function (req, file, cb) {
+    const customPath = req.body.path || `${Date.now()}-${file.originalname}`;
+    cb(null, customPath);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
-    // Em uma implementação real, você salvaria o arquivo em um sistema de arquivos ou serviço de armazenamento
-    // Por enquanto, apenas simulamos um upload bem-sucedido
-    const { bucket, path } = req.body;
-    const filePath = `uploads/${bucket}/${path}`;
+    if (!req.file) {
+      throw new Error('Nenhum arquivo enviado');
+    }
     
-    res.json({ data: { path: filePath, url: `/files/${bucket}/${path}` }, error: null });
+    const bucket = req.body.bucket || 'imagens';
+    const filePath = req.file.path;
+    const relativePath = path.relative('uploads', filePath);
+    
+    res.json({ 
+      data: { 
+        path: req.file.filename, 
+        url: `/api/files/${relativePath}` 
+      }, 
+      error: null 
+    });
   } catch (error) {
+    console.error('Erro no upload:', error);
     res.status(500).json({ data: null, error: error.message });
   }
 });
@@ -32,7 +68,7 @@ app.use('/api/files', express.static('uploads'));
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'umbanda_user',
-  password: process.env.DB_PASSWORD || 'StrongPassword123!',
+  password: process.env.DB_PASSWORD || 'T!8f@K9#e2$BqV1zP&0o',
   database: process.env.DB_NAME || 'simple_ink_umbanda',
   waitForConnections: true,
   connectionLimit: 10,
