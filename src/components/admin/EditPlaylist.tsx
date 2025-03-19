@@ -120,10 +120,14 @@ const EditPlaylist = ({ playlist, onSuccess, onCancel }: EditPlaylistProps) => {
 
       if (uploadError) throw uploadError;
 
-      // Get audio URL
+      // Get audio URL with correct path
       const { publicUrl: audio_url } = mysql_client.storage
         .from('audios')
         .getPublicUrl(audioPath);
+
+      // Ensure the URL points to the correct directory
+      const finalAudioUrl = audio_url.replace('/imagens/', '/audios/');
+
 
       // Create ponto
       const { error: insertError } = await mysql_client
@@ -132,7 +136,7 @@ const EditPlaylist = ({ playlist, onSuccess, onCancel }: EditPlaylistProps) => {
           playlist_id: playlist.id,
           titulo,
           compositor,
-          audio_url
+          audio_url: finalAudioUrl
         })
         .execute();
 

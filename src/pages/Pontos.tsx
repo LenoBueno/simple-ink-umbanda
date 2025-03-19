@@ -190,11 +190,10 @@ const Pontos = () => {
         }
       }
       
-      // Se a URL contém '/audios/' mas o arquivo não existe, tente buscar em '/imagens/'
-      if (audioUrl.includes('/audios/')) {
+      // Garantir que áudios sejam buscados do diretório correto
+      if (!audioUrl.includes('/audios/')) {
         const fileName = audioUrl.split('/').pop();
-        // Tentar primeiro com o caminho completo da API
-        audioUrl = `http://localhost:3000/api/files/imagens/${fileName}`;
+        audioUrl = `http://localhost:3000/api/files/audios/${fileName}`;
       }
       
       console.log('Tentando reproduzir áudio:', audioUrl);
