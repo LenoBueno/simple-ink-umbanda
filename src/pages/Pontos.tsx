@@ -154,14 +154,19 @@ const Pontos = () => {
   const playPonto = (ponto: Ponto) => {
     setCurrentPonto(ponto);
     setCurrentTime(0);
-    setIsPlaying(true);
     
-    // Aguardar o próximo ciclo para garantir que o audioRef foi atualizado
+    // Importante: primeiro definir o estado como playing após o áudio estar pronto
+    // para evitar que o useEffect tente reproduzir antes do áudio estar pronto
+    setIsPlaying(false);
+    
+    // Aguardar o próximo ciclo para garantir que o currentPonto foi atualizado
+    // e o useEffect que atualiza o src do áudio foi executado
     setTimeout(() => {
       if (audioRef.current) {
-        audioRef.current.play();
+        // Definir o estado como playing apenas após o áudio estar pronto
+        setIsPlaying(true);
       }
-    }, 100);
+    }, 200);
   };
 
   // Atualizar o volume do áudio quando o componente é montado ou quando o volume é alterado
@@ -186,53 +191,52 @@ const Pontos = () => {
         if (audioUrl.startsWith('/')) {
           audioUrl = `http://localhost:3000${audioUrl}`;
         } else {
-          audioUrl = `http://localhost:3000/api/files/${audioUrl}`;
+          // Verificar se o áudio está na pasta de imagens ou na pasta de áudios
+          if (audioUrl.includes('/imagens/') || audioUrl.endsWith('.mp3')) {
+            // Se estiver na pasta de imagens ou for um arquivo MP3, usar o caminho direto
+            audioUrl = `http://localhost:3000/api/files/${audioUrl}`;
+          } else {
+            // Tentar primeiro na pasta de áudios
+            const fileName = audioUrl.split('/').pop();
+            audioUrl = `http://localhost:3000/api/files/audios/${fileName}`;
+          }
         }
-      }
-      
-      // Verificar se o áudio está na pasta de imagens (erro comum) ou na pasta de áudios
-      if (audioUrl.includes('/imagens/')) {
-        // Se estiver na pasta de imagens, manter o caminho original
-        // Apenas garantir que a URL base esteja correta
-        if (!audioUrl.startsWith('http')) {
-          audioUrl = `http://localhost:3000${audioUrl}`;
-        }
-      } else if (!audioUrl.includes('/audios/')) {
-        // Se não estiver em nenhuma pasta específica, tentar na pasta de áudios
-        const fileName = audioUrl.split('/').pop();
-        audioUrl = `http://localhost:3000/api/files/audios/${fileName}`;
-        
-        // Se o arquivo não existir na pasta de áudios, tentar na pasta de imagens
-        // (isso será tratado pelo catch do playPromise se falhar)
       }
       
       console.log('Tentando reproduzir áudio:', audioUrl);
+      
+      // Importante: definir src antes de tentar reproduzir
       audioRef.current.src = audioUrl;
+      audioRef.current.load(); // Forçar o carregamento do áudio
       
       if (isPlaying) {
-        const playPromise = audioRef.current.play();
-        
-        // Tratamento de erro para reprodução de áudio (necessário para alguns navegadores)
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.error("Erro ao reproduzir áudio:", error);
-            console.log("URL do áudio que falhou:", audioRef.current.src);
-            
-            // Tentar reproduzir da pasta de imagens se falhar na pasta de áudios
-            if (audioRef.current.src.includes('/audios/')) {
-              const fileName = audioRef.current.src.split('/').pop();
-              const newUrl = `http://localhost:3000/api/files/imagens/${fileName}`;
-              console.log("Tentando URL alternativa:", newUrl);
-              audioRef.current.src = newUrl;
-              audioRef.current.play().catch(err => {
-                console.error("Erro ao reproduzir áudio (segunda tentativa):", err);
+        // Usar setTimeout para garantir que o áudio foi carregado antes de tentar reproduzir
+        setTimeout(() => {
+          const playPromise = audioRef.current.play();
+          
+          // Tratamento de erro para reprodução de áudio (necessário para alguns navegadores)
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.error("Erro ao reproduzir áudio:", error);
+              console.log("URL do áudio que falhou:", audioRef.current.src);
+              
+              // Tentar reproduzir da pasta de imagens se falhar na pasta de áudios
+              if (audioRef.current.src.includes('/audios/')) {
+                const fileName = audioRef.current.src.split('/').pop();
+                const newUrl = `http://localhost:3000/api/files/imagens/${fileName}`;
+                console.log("Tentando URL alternativa:", newUrl);
+                audioRef.current.src = newUrl;
+                audioRef.current.load(); // Forçar o carregamento do áudio
+                audioRef.current.play().catch(err => {
+                  console.error("Erro ao reproduzir áudio (segunda tentativa):", err);
+                  setIsPlaying(false);
+                });
+              } else {
                 setIsPlaying(false);
-              });
-            } else {
-              setIsPlaying(false);
-            }
-          });
-        }
+              }
+            });
+          }
+        }, 100);
       }
     }
   }, [currentPonto, isPlaying]);
@@ -270,10 +274,14 @@ const Pontos = () => {
       {/* Elemento de áudio oculto */}
       <audio
         ref={audioRef}
-        src={currentPonto?.audio_url}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
         onLoadedMetadata={handleLoadedMetadata}
+        onError={(e) => {
+          console.error("Erro no elemento de áudio:", e);
+          setIsPlaying(false);
+        }}
+        preload="auto"
         style={{ display: 'none' }}
       />
       <main className="w-full min-h-screen p-6 md:p-25 pt-72 mt-12">
