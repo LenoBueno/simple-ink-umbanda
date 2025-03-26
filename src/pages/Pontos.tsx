@@ -189,16 +189,16 @@ const Pontos = () => {
       if (!audioUrl.startsWith('http')) {
         // Se não for uma URL completa, adicionar o prefixo da API
         if (audioUrl.startsWith('/')) {
-          audioUrl = `http://localhost:3000${audioUrl}`;
+          audioUrl = `http://192.168.0.115:3000${audioUrl}`;
         } else {
           // Verificar se o áudio está na pasta de imagens ou na pasta de áudios
           if (audioUrl.includes('/imagens/') || audioUrl.endsWith('.mp3')) {
             // Se estiver na pasta de imagens ou for um arquivo MP3, usar o caminho direto
-            audioUrl = `http://localhost:3000/api/files/${audioUrl}`;
+            audioUrl = `http://192.168.0.115:3000/api/files/${audioUrl}`;
           } else {
             // Tentar primeiro na pasta de áudios
             const fileName = audioUrl.split('/').pop();
-            audioUrl = `http://localhost:3000/api/files/audios/${fileName}`;
+            audioUrl = `http://192.168.0.115:3000/api/files/audios/${fileName}`;
           }
         }
       }
@@ -223,7 +223,7 @@ const Pontos = () => {
               // Tentar reproduzir da pasta de imagens se falhar na pasta de áudios
               if (audioRef.current.src.includes('/audios/')) {
                 const fileName = audioRef.current.src.split('/').pop();
-                const newUrl = `http://localhost:3000/api/files/imagens/${fileName}`;
+                const newUrl = `http://192.168.0.115:3000/api/files/imagens/${fileName}`;
                 console.log("Tentando URL alternativa:", newUrl);
                 audioRef.current.src = newUrl;
                 audioRef.current.load(); // Forçar o carregamento do áudio
