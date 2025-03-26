@@ -13,7 +13,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware para garantir que todas as respostas da API sejam JSON
 app.use((req, res, next) => {
-  res.header('Content-Type', 'application/json');
+  // Apenas define o Content-Type para rotas de API, não para arquivos estáticos
+  if (req.path.startsWith('/api/')) {
+    res.header('Content-Type', 'application/json');
+  }
   next();
 });
 
@@ -67,14 +70,35 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// Rota para servir arquivos estáticos
-app.use('/api/files', express.static('uploads'));
+// Rota para servir arquivos estáticos com configuração de MIME types
+app.use('/api/files', express.static('uploads', {
+  setHeaders: (res, path) => {
+    // Define MIME types específicos para arquivos JavaScript e TypeScript
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.jsx') || path.endsWith('.ts') || path.endsWith('.tsx')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
+
+// Servir arquivos estáticos da pasta dist (para produção)
+app.use(express.static('dist', {
+  setHeaders: (res, path) => {
+    // Define MIME types específicos para arquivos JavaScript e TypeScript
+    if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.jsx') || path.endsWith('.ts') || path.endsWith('.tsx')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    }
+  }
+}));
 
 // Configuração do pool de conexões MySQL
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'umbanda_user',
-  password: process.env.DB_PASSWORD || 'T!8f@K9#e2$BqV1zP&0o',
+  password: process.env.DB_PASSWORD || '148750',
   database: process.env.DB_NAME || 'simple_ink_umbanda',
   waitForConnections: true,
   connectionLimit: 10,
