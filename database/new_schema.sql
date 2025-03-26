@@ -145,7 +145,7 @@ INSERT INTO historia (id, conteudo, autor_id)
 VALUES (UUID(), 'Conteúdo padrão da história da Umbanda.', (SELECT id FROM usuarios WHERE email = 'admin@simpleinkumbanda.com'));
 
 -- Create a user for the application
-CREATE USER IF NOT EXISTS 'umbanda_user'@'localhost' IDENTIFIED BY 'T!8f@K9#e2$BqV1zP&0o';
+CREATE USER IF NOT EXISTS 'umbanda_user'@'localhost' IDENTIFIED BY '148750';
 GRANT SELECT, INSERT, UPDATE, DELETE ON simple_ink_umbanda.* TO 'umbanda_user'@'localhost';
 FLUSH PRIVILEGES;
 
