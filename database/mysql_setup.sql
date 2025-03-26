@@ -89,16 +89,16 @@ DELIMITER ;
 INSERT INTO historia (id, conteudo) VALUES (UUID(), 'Conteúdo padrão da história da Umbanda.');
 
 -- Create a user for the application
-CREATE USER IF NOT EXISTS 'umbanda_user'@'localhost' IDENTIFIED BY '148750';
-GRANT SELECT, INSERT, UPDATE, DELETE ON simple_ink_umbanda.* TO 'umbanda_user'@'localhost';
+CREATE USER IF NOT EXISTS 'leno'@'localhost' IDENTIFIED BY 'Ftec@148750W559rt';
+GRANT SELECT, INSERT, UPDATE, DELETE ON simple_ink_umbanda.* TO 'leno'@'localhost';
 FLUSH PRIVILEGES;
 
 -- Sample connection string for Node.js application:
 -- const mysql = require('mysql2');
 -- const connection = mysql.createConnection({
 --   host: 'localhost',
---   user: 'umbanda_user',
---   password: '148750',
+--   user: 'leno',
+--   password: 'Ftec@148750W559rt',
 --   database: 'simple_ink_umbanda'
 -- });
 

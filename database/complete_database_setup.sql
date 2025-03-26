@@ -145,16 +145,16 @@ INSERT INTO historia (id, conteudo, autor_id)
 VALUES (UUID(), 'Conteúdo padrão da história da Umbanda.', (SELECT id FROM usuarios WHERE email = 'admin@simpleinkumbanda.com'));
 
 -- Create a user for the application
-CREATE USER IF NOT EXISTS 'umbanda_user'@'localhost' IDENTIFIED BY '148750';
-GRANT SELECT, INSERT, UPDATE, DELETE ON simple_ink_umbanda.* TO 'umbanda_user'@'localhost';
+CREATE USER IF NOT EXISTS 'leno'@'localhost' IDENTIFIED BY 'Ftec@148750W559rt';
+GRANT SELECT, INSERT, UPDATE, DELETE ON simple_ink_umbanda.* TO 'leno'@'localhost';
 FLUSH PRIVILEGES;
 
 -- Configuração de conexão para aplicação Node.js:
 -- const mysql = require('mysql2');
 -- const connection = mysql.createConnection({
 --   host: 'localhost',
---   user: 'umbanda_user',
---   password: '148750',
+--   user: 'leno',
+--   password: 'Ftec@148750W559rt',
 --   database: 'simple_ink_umbanda'
 -- });
 

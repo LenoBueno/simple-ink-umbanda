@@ -97,8 +97,8 @@ app.use(express.static('dist', {
 // Configuração do pool de conexões MySQL
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'umbanda_user',
-  password: process.env.DB_PASSWORD || '148750',
+  user: process.env.DB_USER || 'leno',
+  password: process.env.DB_PASSWORD || 'Ftec@148750W559rt',
   database: process.env.DB_NAME || 'simple_ink_umbanda',
   waitForConnections: true,
   connectionLimit: 10,
