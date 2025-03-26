@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.optimized
+    ports:
+      - "80:80"
+    volumes:
+      - ./uploads:/usr/share/nginx/html/uploads
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - CORS_ORIGIN=http://localhost
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.8'  # Leave some CPU for the OS
+          memory: 2G   # Limit memory usage
+        reservations:
+          cpus: '0.5'  # Minimum CPU guaranteed
+          memory: 512M # Minimum memory guaranteed
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
