@@ -192,9 +192,18 @@ const Pontos = () => {
           audioUrl = `http://192.168.0.115:3000${audioUrl}`;
         } else {
           // Verificar se o áudio está na pasta de imagens ou na pasta de áudios
-          if (audioUrl.includes('/imagens/') || audioUrl.endsWith('.mp3')) {
-            // Se estiver na pasta de imagens ou for um arquivo MP3, usar o caminho direto
+          if (audioUrl.includes('/imagens/')) {
+            // Se estiver na pasta de imagens, usar o caminho direto
             audioUrl = `http://192.168.0.115:3000/api/files/${audioUrl}`;
+          } else if (audioUrl.endsWith('.mp3')) {
+            // Se for um arquivo MP3, verificar se já tem um caminho parcial
+            if (audioUrl.includes('/')) {
+              // Se já tem um caminho parcial, usar o caminho direto
+              audioUrl = `http://192.168.0.115:3000/api/files/${audioUrl}`;
+            } else {
+              // Se não tem um caminho parcial, tentar na pasta de áudios
+              audioUrl = `http://192.168.0.115:3000/api/files/audios/${audioUrl}`;
+            }
           } else {
             // Tentar primeiro na pasta de áudios
             const fileName = audioUrl.split('/').pop();
