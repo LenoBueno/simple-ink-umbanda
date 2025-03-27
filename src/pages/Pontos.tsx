@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
 import Footer from "../components/Footer";
 import { mysql_client } from "../lib/mysql";
-import type { Playlist, Ponto } from "../types";
-import { X, Play, Pause, SkipBack, SkipForward, Volume2, Repeat, List } from 'lucide-react';
+import type { Playlist, Ponto } from "../types/index";
+import { X, Play, Pause, SkipBack, SkipForward, Volume2, Repeat, List } from "lucide-react";
 
 const Pontos = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -122,12 +122,18 @@ const Pontos = () => {
 
   // Controlar a reprodução (play/pause)
   const togglePlay = () => {
-    if (!currentPonto) return;
+    if (!currentPonto || !audioRef.current) return;
     
     if (isPlaying) {
-      audioRef.current?.pause();
+      audioRef.current.pause();
     } else {
-      audioRef.current?.play();
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("Erro ao reproduzir áudio:", error);
+          setIsPlaying(false);
+        });
+      }
     }
     setIsPlaying(!isPlaying);
   };
@@ -215,37 +221,43 @@ const Pontos = () => {
       console.log('Tentando reproduzir áudio:', audioUrl);
       
       // Importante: definir src antes de tentar reproduzir
-      audioRef.current.src = audioUrl;
-      audioRef.current.load(); // Forçar o carregamento do áudio
-      
-      if (isPlaying) {
-        // Usar setTimeout para garantir que o áudio foi carregado antes de tentar reproduzir
-        setTimeout(() => {
-          const playPromise = audioRef.current.play();
-          
-          // Tratamento de erro para reprodução de áudio (necessário para alguns navegadores)
-          if (playPromise !== undefined) {
-            playPromise.catch(error => {
-              console.error("Erro ao reproduzir áudio:", error);
-              console.log("URL do áudio que falhou:", audioRef.current.src);
+      if (audioRef.current) {
+        audioRef.current.src = audioUrl;
+        audioRef.current.load(); // Forçar o carregamento do áudio
+        
+        if (isPlaying) {
+          // Usar setTimeout para garantir que o áudio foi carregado antes de tentar reproduzir
+          setTimeout(() => {
+            if (audioRef.current) {
+              const playPromise = audioRef.current.play();
               
-              // Tentar reproduzir da pasta de imagens se falhar na pasta de áudios
-              if (audioRef.current.src.includes('/audios/')) {
-                const fileName = audioRef.current.src.split('/').pop();
-                const newUrl = `http://192.168.0.115:3000/api/files/imagens/${fileName}`;
-                console.log("Tentando URL alternativa:", newUrl);
-                audioRef.current.src = newUrl;
-                audioRef.current.load(); // Forçar o carregamento do áudio
-                audioRef.current.play().catch(err => {
-                  console.error("Erro ao reproduzir áudio (segunda tentativa):", err);
-                  setIsPlaying(false);
+              // Tratamento de erro para reprodução de áudio (necessário para alguns navegadores)
+              if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                  console.error("Erro ao reproduzir áudio:", error);
+                  if (audioRef.current) {
+                    console.log("URL do áudio que falhou:", audioRef.current.src);
+                    
+                    // Tentar reproduzir da pasta de imagens se falhar na pasta de áudios
+                    if (audioRef.current.src.includes('/audios/')) {
+                      const fileName = audioRef.current.src.split('/').pop();
+                      const newUrl = `http://192.168.0.115:3000/api/files/imagens/${fileName}`;
+                      console.log("Tentando URL alternativa:", newUrl);
+                      audioRef.current.src = newUrl;
+                      audioRef.current.load(); // Forçar o carregamento do áudio
+                      audioRef.current.play().catch(err => {
+                        console.error("Erro ao reproduzir áudio (segunda tentativa):", err);
+                        setIsPlaying(false);
+                      });
+                    } else {
+                      setIsPlaying(false);
+                    }
+                  }
                 });
-              } else {
-                setIsPlaying(false);
               }
-            });
-          }
-        }, 100);
+            }
+          }, 100);
+        }
       }
     }
   }, [currentPonto, isPlaying]);
