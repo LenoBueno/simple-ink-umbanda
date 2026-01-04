@@ -1,5 +1,6 @@
+import React from 'react';
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <footer className="py-8 mt-auto">
       <p className="text-sm tracking-wider text-center">

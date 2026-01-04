@@ -1,9 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-
-// Configuração para usar exclusivamente a API real e o banco de dados
+import { API_BASE_URL } from '@/constants/api';
 
 // URL base da API
-const API_URL = 'http://192.168.0.115:3000/api';
+const API_URL = `${API_BASE_URL}/api`;
 
 // Helper function para fazer requisições à API
 async function apiRequest(endpoint: string, method: string = 'GET', data?: any) {
