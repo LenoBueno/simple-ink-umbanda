@@ -1,7 +1,8 @@
 /* Playlist Card Styles */
 .card {
   position: relative;
-  width: 350px;
+  width: 100%;
+  max-width: 350px;
   height: 190px;
   background: #FFFFFF;
   border-radius: 20px;
@@ -9,7 +10,9 @@
   transition: 0.5s;
 }
 
-.card:hover {
+.card:hover,
+.card:focus-within,
+.card.is-open {
   height: 450px;
 }
 
@@ -27,7 +30,9 @@
   transition: 0.5s;
 }
 
-.card:hover .imgBx {
+.card:hover .imgBx,
+.card:focus-within .imgBx,
+.card.is-open .imgBx {
   width: 250px;
   height: 250px;
 }
@@ -59,7 +64,9 @@
   transform: translateY(150px);
 }
 
-.card:hover .content .details {
+.card:hover .content .details,
+.card:focus-within .content .details,
+.card.is-open .content .details {
   transform: translateY(0px);
 }
 

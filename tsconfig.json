@@ -5,9 +5,10 @@
     "jsx": "react",
     "outDir": "./dist",
     "esModuleInterop": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
     "noImplicitAny": true,
     "noUnusedParameters": false,

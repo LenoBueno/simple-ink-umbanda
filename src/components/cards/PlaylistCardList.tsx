@@ -33,7 +33,7 @@ const PlaylistCardList: React.FC<PlaylistCardListProps> = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-24 max-w-[1800px] mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 sm:gap-20 md:gap-24 max-w-[1800px] mx-auto place-items-center pt-16">
       {playlists.map((playlist) => (
         <PlaylistCard
           key={playlist.id}

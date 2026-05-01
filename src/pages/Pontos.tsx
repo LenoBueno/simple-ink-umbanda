@@ -17,7 +17,7 @@ const Pontos: React.FC = () => {
   } = usePlaylist();
 
   return (
-    <PageLayout className="p-6 md:p-25 pt-72 mt-12" showFooter={true}>
+    <PageLayout className="px-4 sm:px-8 md:px-12 pt-32 sm:pt-40 md:pt-56 pb-16" showFooter={true}>
       <PlaylistCardList
         playlists={playlists}
         isLoading={isLoading}
