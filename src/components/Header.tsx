@@ -13,15 +13,15 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="fixed top-12 left-12 z-50 transition-all duration-300">
+    <header className="fixed top-4 left-4 sm:top-8 sm:left-8 md:top-12 md:left-12 z-50 transition-all duration-300">
       <div className="relative">
-        <h1 className={`text-5xl tracking-wider font-semibold transition-all duration-700 ${
-          isScrolled ? 'text-xl' : 'text-5xl'
+        <h1 className={`tracking-wider font-semibold transition-all duration-700 ${
+          isScrolled ? 'text-lg sm:text-xl' : 'text-3xl sm:text-4xl md:text-5xl'
         }`}>
           UMBANDA
         </h1>
-        <span className={`absolute right-0 top-8[-1.5rem] font-light tracking-widest uppercase text-sm transition-all duration-700 ${
-          isScrolled ? 'text-xs' : 'text-sm'
+        <span className={`absolute right-0 font-light tracking-widest uppercase transition-all duration-700 ${
+          isScrolled ? 'text-[10px] sm:text-xs' : 'text-[10px] sm:text-xs md:text-sm'
         }`}>
           desde 1908
         </span>

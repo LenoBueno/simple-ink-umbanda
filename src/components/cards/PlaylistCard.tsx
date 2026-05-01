@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Playlist } from '@/types';
 
 interface PlaylistCardProps {
@@ -8,12 +8,19 @@ interface PlaylistCardProps {
 }
 
 const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist, onFollow, onPlay }) => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="card">
+    <div
+      className={`card ${isOpen ? 'is-open' : ''}`}
+      onClick={() => setIsOpen((v) => !v)}
+      role="button"
+      tabIndex={0}
+    >
       <div className="imgBx">
         <img
           src={playlist.imagem_url}
           alt={playlist.titulo}
+          loading="lazy"
         />
       </div>
       <div className="content">
@@ -41,10 +48,10 @@ const PlaylistCard: React.FC<PlaylistCardProps> = ({ playlist, onFollow, onPlay 
             </h3>
           </div>
           <div className="actionBtn">
-            <button onClick={() => onFollow(playlist.id)}>
+            <button onClick={(e) => { e.stopPropagation(); onFollow(playlist.id); }}>
               Seguir
             </button>
-            <button onClick={() => onPlay(playlist)}>
+            <button onClick={(e) => { e.stopPropagation(); onPlay(playlist); }}>
               Reproduzir
             </button>
           </div>

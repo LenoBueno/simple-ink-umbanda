@@ -40,7 +40,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ playlist, pontos, onClose }) 
   }, [pontos, currentPonto, playPonto]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
       {/* Hidden audio element */}
       <audio
         ref={audioRef}
@@ -52,24 +52,25 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ playlist, pontos, onClose }) 
         style={{ display: 'none' }}
       />
       
-      <div className="bg-white p-6 rounded-lg shadow-xl w-[500px] max-w-[95vw]">
+      <div className="bg-white p-4 sm:p-6 rounded-t-2xl sm:rounded-lg shadow-xl w-full sm:w-[500px] sm:max-w-[95vw] max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-start justify-between mb-4 sm:mb-6 gap-2">
+          <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
             <img 
               src={playlist.imagem_url} 
               alt={playlist.titulo}
-              className="w-20 h-20 rounded-md object-cover"
+              className="w-14 h-14 sm:w-20 sm:h-20 rounded-md object-cover flex-shrink-0"
             />
-            <div className="flex flex-col">
-              <h3 className="text-xl font-bold">{playlist.titulo}</h3>
-              <p className="text-sm text-gray-500">{playlist.subtitulo}</p>
-              <span className="text-xs text-gray-400 mt-1">Playing from Playlist</span>
+            <div className="flex flex-col min-w-0">
+              <h3 className="text-base sm:text-xl font-bold truncate">{playlist.titulo}</h3>
+              <p className="text-xs sm:text-sm text-gray-500 truncate">{playlist.subtitulo}</p>
+              <span className="text-[10px] sm:text-xs text-gray-400 mt-1">Playing from Playlist</span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-black"
+            aria-label="Fechar"
+            className="text-gray-500 hover:text-black p-2 -m-2 flex-shrink-0"
           >
             <X size={24} />
           </button>
@@ -83,22 +84,24 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ playlist, pontos, onClose }) 
         />
 
         {/* Controls */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 gap-2">
           <AudioControls
             isPlaying={isPlaying}
             onTogglePlay={togglePlay}
             onPrevious={playPrevious}
             onNext={playNext}
           />
-          <div className="flex items-center space-x-4">
-            <button className="text-gray-700 hover:text-black">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <button aria-label="Repetir" className="text-gray-700 hover:text-black p-1">
               <Repeat size={20} />
             </button>
-            <VolumeControl
-              volume={volume}
-              onVolumeChange={handleVolumeChange}
-            />
-            <button className="text-gray-700 hover:text-black">
+            <div className="hidden sm:block">
+              <VolumeControl
+                volume={volume}
+                onVolumeChange={handleVolumeChange}
+              />
+            </div>
+            <button aria-label="Lista" className="text-gray-700 hover:text-black p-1">
               <List size={20} />
             </button>
           </div>

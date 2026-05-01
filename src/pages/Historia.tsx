@@ -3,9 +3,9 @@ import PageLayout from '@/components/layout/PageLayout';
 
 const Historia: React.FC = () => {
   return (
-    <PageLayout className="flex items-center justify-center px-24 py-48">
-      <div className="max-w-3xl space-y-8">
-        <h2 className="text-3xl font-bold mb-8">A História da Umbanda: Uma Religião Brasileira de Muitas Raízes</h2>
+    <PageLayout className="flex items-start md:items-center justify-center px-6 sm:px-12 md:px-24 pt-32 pb-16 md:py-48">
+      <div className="max-w-3xl space-y-6 md:space-y-8">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 md:mb-8 leading-tight">A História da Umbanda: Uma Religião Brasileira de Muitas Raízes</h2>
         
         <p className="text-lg leading-relaxed">
           A Umbanda é uma religião tipicamente brasileira, conhecida por sua riqueza espiritual e cultural. 
